@@ -1,42 +1,42 @@
 import React from 'react';
 import Task from './Task';
 import CreateTaskInput from './CreateTaskInput';
+import {
+  createTask,
+  fetchTasksList,
+  updateTask,
+  deleteTask,
+} from './tasksGateway';
 
 class TasksList extends React.Component {
   state = {
-    tasks: [
-      { text: 'Lear HTML / CSS', done: true, id: 1 },
-      { text: 'Learn JavaScript', done: true, id: 2 },
-      { text: 'Learn Dev Tools', done: true, id: 3 },
-      { text: 'Learn React', done: false, id: 4 },
-      { text: 'Learn Redux', done: false, id: 5 },
-    ],
+    tasks: [],
+  };
+
+  componentDidMount = () => {
+    this.fetchTasks();
+  };
+
+  fetchTasks = () => {
+    fetchTasksList().then(tasksList => {
+      this.setState({
+        tasks: tasksList,
+      });
+    });
   };
 
   onCreate = text => {
-    const { tasks } = this.state;
-    const updatedTasks = [...tasks, { text, done: false, id: Math.random() }];
-    this.setState({
-      tasks: updatedTasks,
-    });
+    createTask({ text, done: false }).then(() => this.fetchTasks());
   };
 
   onToggleStatusTask = id => {
-    const updatedTasks = this.state.tasks.map(task =>
-      task.id === id ? { ...task, done: !task.done } : task,
-    );
+    const { done, text } = this.state.tasks.find(task => task.id === id);
 
-    this.setState({
-      tasks: updatedTasks,
-    });
+    updateTask(id, { text, done: !done }).then(() => this.fetchTasks());
   };
 
   onDeleteTask = id => {
-    const updatedTasks = this.state.tasks.filter(task => task.id !== id);
-
-    this.setState({
-      tasks: updatedTasks,
-    });
+    deleteTask(id).then(() => this.fetchTasks());
   };
 
   render() {
