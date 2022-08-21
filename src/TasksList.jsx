@@ -13,14 +13,47 @@ class TasksList extends React.Component {
     ],
   };
 
+  onCreate = text => {
+    const { tasks } = this.state;
+    const updatedTasks = [...tasks, { text, done: false, id: Math.random() }];
+    this.setState({
+      tasks: updatedTasks,
+    });
+  };
+
+  onToggleStatusTask = id => {
+    const updatedTasks = this.state.tasks.map(task =>
+      task.id === id ? { ...task, done: !task.done } : task,
+    );
+
+    this.setState({
+      tasks: updatedTasks,
+    });
+  };
+
+  onDeleteTask = id => {
+    const updatedTasks = this.state.tasks.filter(task => task.id !== id);
+
+    this.setState({
+      tasks: updatedTasks,
+    });
+  };
+
   render() {
     return (
       <main className="todo-list">
-        <CreateTaskInput />
+        <CreateTaskInput onCreate={this.onCreate} />
         <ul className="list">
-          {this.state.tasks.map(task => (
-            <Task key={task.id} {...task} />
-          ))}
+          {[...this.state.tasks]
+            .sort((a, b) => a.done - b.done)
+            .map(task => (
+              <Task
+                key={task.id}
+                {...task}
+                onChange={this.onToggleStatusTask}
+                onDelete={this.onDeleteTask}
+              />
+            ))}
         </ul>
       </main>
     );
