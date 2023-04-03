@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Task from './Task';
 import CreateTaskInput from './CreateTaskInput';
 import {
@@ -8,56 +8,50 @@ import {
   deleteTask,
 } from './tasksGateway';
 
-class TasksList extends React.Component {
-  state = {
-    tasks: [],
-  };
+const TasksList = () => {
+  const [tasks, setTasks] = useState([]);
 
-  componentDidMount = () => {
-    this.fetchTasks();
-  };
-
-  fetchTasks = () => {
+  const fetchTasks = () => {
     fetchTasksList().then(tasksList => {
-      this.setState({
-        tasks: tasksList,
-      });
+      setTasks(tasksList);
     });
   };
 
-  onCreate = text => {
-    createTask({ text, done: false }).then(() => this.fetchTasks());
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const onCreate = text => {
+    createTask({ text, done: false }).then(() => fetchTasks());
   };
 
-  onToggleStatusTask = id => {
-    const { done, text } = this.state.tasks.find(task => task.id === id);
+  const onToggleStatusTask = id => {
+    const { done, text } = tasks.find(task => task.id === id);
 
-    updateTask(id, { text, done: !done }).then(() => this.fetchTasks());
+    updateTask(id, { text, done: !done }).then(() => fetchTasks());
   };
 
-  onDeleteTask = id => {
-    deleteTask(id).then(() => this.fetchTasks());
+  const onDeleteTask = id => {
+    deleteTask(id).then(() => fetchTasks());
   };
 
-  render() {
-    return (
-      <main className="todo-list">
-        <CreateTaskInput onCreate={this.onCreate} />
-        <ul className="list">
-          {[...this.state.tasks]
-            .sort((a, b) => a.done - b.done)
-            .map(task => (
-              <Task
-                key={task.id}
-                {...task}
-                onChange={this.onToggleStatusTask}
-                onDelete={this.onDeleteTask}
-              />
-            ))}
-        </ul>
-      </main>
-    );
-  }
-}
+  return (
+    <main className="todo-list">
+      <CreateTaskInput onCreate={onCreate} />
+      <ul className="list">
+        {[...tasks]
+          .sort((a, b) => a.done - b.done)
+          .map(task => (
+            <Task
+              key={task.id}
+              {...task}
+              onChange={onToggleStatusTask}
+              onDelete={onDeleteTask}
+            />
+          ))}
+      </ul>
+    </main>
+  );
+};
 
 export default TasksList;
