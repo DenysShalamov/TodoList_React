@@ -1,38 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Task from './Task';
+import * as tasksActions from '../tasks.actions';
+import { taskListSelector } from '../tasks.selectors';
 import CreateTaskInput from './CreateTaskInput';
-import {
-  createTask,
-  fetchTasksList,
-  updateTask,
-  deleteTask,
-} from '../tasksGateway';
+import { createTask, updateTask, deleteTask } from '../tasksGateway';
 
-const TasksList = () => {
-  const [tasks, setTasks] = useState([]);
-
-  const fetchTasks = () => {
-    fetchTasksList().then(tasksList => {
-      setTasks(tasksList);
-    });
-  };
-
+const TasksList = ({ fetchTasksList, tasks }) => {
   useEffect(() => {
-    fetchTasks();
+    fetchTasksList();
   }, []);
 
   const onCreate = text => {
-    createTask({ text, done: false }).then(() => fetchTasks());
+    createTask({ text, done: false }).then(() => fetchTasksList());
   };
 
   const onToggleStatusTask = id => {
     const { done, text } = tasks.find(task => task.id === id);
-
-    updateTask(id, { text, done: !done }).then(() => fetchTasks());
+    updateTask(id, { text, done: !done }).then(() => fetchTasksList());
   };
 
   const onDeleteTask = id => {
-    deleteTask(id).then(() => fetchTasks());
+    deleteTask(id).then(() => fetchTasksList());
   };
 
   return (
@@ -54,4 +44,19 @@ const TasksList = () => {
   );
 };
 
-export default TasksList;
+TasksList.propTypes = {
+  fetchTasksList: PropTypes.func.isRequired,
+  tasks: PropTypes.arrayOf(PropTypes.shape()),
+};
+
+const mapState = state => {
+  return {
+    tasks: taskListSelector(state),
+  };
+};
+
+const mapDispatch = dispatch => ({
+  fetchTasksList: () => dispatch(tasksActions.getTasksData()),
+});
+
+export default connect(mapState, mapDispatch)(TasksList);
