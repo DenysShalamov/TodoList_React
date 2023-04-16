@@ -6,7 +6,7 @@ import {
   fetchTasksList,
   updateTask,
   deleteTask,
-} from '../gateWay/tasksGateway';
+} from '../tasksGateway';
 
 const TasksList = () => {
   const [tasks, setTasks] = useState([]);

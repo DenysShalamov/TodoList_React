@@ -20,6 +20,7 @@ module.exports = {
     },
   },
   rules: {
+    'default-param-last': 0,
     'class-methods-use-this': [0, { exceptMethods: ['render'] }],
     'no-alert': 0,
     'no-console': 0,
