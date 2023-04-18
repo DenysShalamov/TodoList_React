@@ -3,60 +3,64 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Task from './Task';
 import * as tasksActions from '../tasks.actions';
-import { taskListSelector } from '../tasks.selectors';
+import { isFetchingSelector, sortedTaskSelector } from '../tasks.selectors';
 import CreateTaskInput from './CreateTaskInput';
-import { createTask, updateTask, deleteTask } from '../tasksGateway';
+import Spinner from './Spinner';
 
-const TasksList = ({ fetchTasksList, tasks }) => {
-  useEffect(() => {
-    fetchTasksList();
-  }, []);
-
-  const onCreate = text => {
-    createTask({ text, done: false }).then(() => fetchTasksList());
+class TasksList extends React.Component {
+  state = {
+    tasks: [],
   };
 
-  const onToggleStatusTask = id => {
-    const { done, text } = tasks.find(task => task.id === id);
-    updateTask(id, { text, done: !done }).then(() => fetchTasksList());
-  };
+  componentDidMount() {
+    this.props.getTasksList();
+  }
 
-  const onDeleteTask = id => {
-    deleteTask(id).then(() => fetchTasksList());
-  };
-
-  return (
-    <main className="todo-list">
-      <CreateTaskInput onCreate={onCreate} />
-      <ul className="list">
-        {[...tasks]
-          .sort((a, b) => a.done - b.done)
-          .map(task => (
+  render() {
+    return (
+      <main className="todo-list">
+        <CreateTaskInput onCreate={this.props.createTask} />
+        <ul className="list">
+          {this.props.isFetching && <Spinner />}
+          {this.props.tasks.map(task => (
             <Task
               key={task.id}
               {...task}
-              onChange={onToggleStatusTask}
-              onDelete={onDeleteTask}
+              onDelete={this.props.deleteTask}
+              onChange={this.props.updateTask}
             />
           ))}
-      </ul>
-    </main>
-  );
-};
-
-TasksList.propTypes = {
-  fetchTasksList: PropTypes.func.isRequired,
-  tasks: PropTypes.arrayOf(PropTypes.shape()),
-};
+        </ul>
+      </main>
+    );
+  }
+}
 
 const mapState = state => {
   return {
-    tasks: taskListSelector(state),
+    tasks: sortedTaskSelector(state),
+    isFetching: isFetchingSelector(state),
   };
 };
 
-const mapDispatch = dispatch => ({
-  fetchTasksList: () => dispatch(tasksActions.getTasksData()),
-});
+const mapDispatch = {
+  getTasksList: tasksActions.getTasksList,
+  updateTask: tasksActions.updateTasksList,
+  deleteTask: tasksActions.deleteTasksList,
+  createTask: tasksActions.createTasksList,
+};
+
+TasksList.propTypes = {
+  getTasksList: PropTypes.func.isRequired,
+  updateTask: PropTypes.func.isRequired,
+  deleteTask: PropTypes.func.isRequired,
+  createTask: PropTypes.func.isRequired,
+  tasks: PropTypes.arrayOf(PropTypes.shape()),
+  isFetching: PropTypes.bool,
+};
+
+TasksList.defaultProps = {
+  isFetching: false,
+};
 
 export default connect(mapState, mapDispatch)(TasksList);

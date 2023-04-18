@@ -1,19 +1,28 @@
-import { TASKS_DATA_RECIEVED } from './tasks.actions';
+import { TASKS_LIST_RECIEVED, SHOW_SPINNER } from './tasks.actions';
 
 const initialState = {
   tasksList: [],
+  isFetching: false,
 };
 
-const tasksListReducer = (state = initialState, action) => {
+const tasksReducer = (state = initialState, action) => {
   switch (action.type) {
-    case TASKS_DATA_RECIEVED:
+    case SHOW_SPINNER: {
       return {
         ...state,
-        tasksList: action.payload.tasksList,
+        isFetching: true,
       };
+    }
+    case TASKS_LIST_RECIEVED: {
+      return {
+        ...state,
+        tasksList: action.payload.taskList,
+        isFetching: false,
+      };
+    }
     default:
       return state;
   }
 };
 
-export default tasksListReducer;
+export default tasksReducer;
