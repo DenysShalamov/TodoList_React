@@ -7,34 +7,37 @@ import { isFetchingSelector, sortedTaskSelector } from '../tasks.selectors';
 import CreateTaskInput from './CreateTaskInput';
 import Spinner from './Spinner';
 
-class TasksList extends React.Component {
-  state = {
-    tasks: [],
-  };
+const TasksList = props => {
+  const {
+    tasks,
+    createTask,
+    deleteTask,
+    updateTask,
+    getTasksList,
+    isFetching,
+  } = props;
 
-  componentDidMount() {
-    this.props.getTasksList();
-  }
+  useEffect(() => {
+    getTasksList();
+  }, []);
 
-  render() {
-    return (
-      <main className="todo-list">
-        <CreateTaskInput onCreate={this.props.createTask} />
-        <ul className="list">
-          {this.props.isFetching && <Spinner />}
-          {this.props.tasks.map(task => (
-            <Task
-              key={task.id}
-              {...task}
-              onDelete={this.props.deleteTask}
-              onChange={this.props.updateTask}
-            />
-          ))}
-        </ul>
-      </main>
-    );
-  }
-}
+  return (
+    <main className="todo-list">
+      <CreateTaskInput onCreate={createTask} />
+      <ul className="list">
+        {isFetching && <Spinner />}
+        {tasks.map(task => (
+          <Task
+            key={task.id}
+            {...task}
+            onDelete={deleteTask}
+            onChange={updateTask}
+          />
+        ))}
+      </ul>
+    </main>
+  );
+};
 
 const mapState = state => {
   return {

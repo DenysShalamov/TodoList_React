@@ -20,15 +20,14 @@ export const tasksListRecieved = taskList => {
 };
 
 export const getTasksList = () => {
-  const thunkAction = function (dispatch) {
+  return dispatch => {
     dispatch(showSpinner());
     apiTasks.getTasks().then(taskData => dispatch(tasksListRecieved(taskData)));
   };
-  return thunkAction;
 };
 
 export const updateTasksList = taskId => {
-  const thunkAction = function (dispatch, getState) {
+  return (dispatch, getState) => {
     dispatch(showSpinner());
     const state = getState();
     const taskList = tasksSelector(state);
@@ -39,19 +38,17 @@ export const updateTasksList = taskId => {
       .updateTask(taskId, updatedTask)
       .then(() => dispatch(getTasksList()));
   };
-  return thunkAction;
 };
 
 export const deleteTasksList = taskId => {
-  const thunkAction = function (dispatch) {
+  return dispatch => {
     dispatch(showSpinner());
     apiTasks.deleteTask(taskId).then(() => dispatch(getTasksList()));
   };
-  return thunkAction;
 };
 
 export const createTasksList = text => {
-  const thunkAction = function (dispatch) {
+  return dispatch => {
     if (text === '') {
       return null;
     }
@@ -62,5 +59,4 @@ export const createTasksList = text => {
     };
     apiTasks.createTask(newTask).then(() => dispatch(getTasksList()));
   };
-  return thunkAction;
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
-function Task({ id, text, done, onDelete, onChange }) {
+const Task = ({ id, text, done, onDelete, onChange }) => {
   return (
     <li className={classNames('list-item', { 'list-item_done': done })}>
       <input
@@ -18,7 +18,7 @@ function Task({ id, text, done, onDelete, onChange }) {
       ></button>
     </li>
   );
-}
+};
 
 Task.propTypes = {
   id: PropTypes.string.isRequired,

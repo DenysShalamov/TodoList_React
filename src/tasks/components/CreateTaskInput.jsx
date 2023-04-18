@@ -1,41 +1,26 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-class CreateTaskInput extends React.Component {
-  state = {
-    text: '',
+const CreateTaskInput = ({ onCreate }) => {
+  const [text, setText] = useState('');
+  const handleCreateTask = () => {
+    onCreate(text);
+    setText('');
   };
-
-  handleChangeText = e => this.setState({ text: e.target.value });
-
-  handleCreateTask = () => {
-    const { text } = this.state;
-
-    this.props.onCreate(text);
-
-    this.setState({ text: '' });
-  };
-
-  render() {
-    const { text } = this.state;
-    return (
-      <div className="create-task">
-        <input
-          className="create-task__input"
-          type="text"
-          value={text}
-          onChange={this.handleChangeText}
-        />
-        <button
-          className="btn create-task__btn"
-          onClick={this.handleCreateTask}
-        >
-          Create
-        </button>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="create-task">
+      <input
+        className="create-task__input"
+        type="text"
+        value={text}
+        onChange={e => setText(e.target.value)}
+      />
+      <button className="btn create-task__btn" onClick={handleCreateTask}>
+        Create
+      </button>
+    </div>
+  );
+};
 
 CreateTaskInput.propTypes = {
   onCreate: PropTypes.func,
