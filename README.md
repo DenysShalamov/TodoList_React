@@ -13,6 +13,7 @@
 + [BEM methodology](https://en.bem.info/methodology/)
 + [JavaScript](https://uk.wikipedia.org/wiki/JavaScript)
 + [React](https://uk.reactjs.org/)
++ [Redux](https://redux.js.org/)
 + [Webpack](https://webpack.js.org/)
 
 ## Author
